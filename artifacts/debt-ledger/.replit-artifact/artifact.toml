@@ -1,0 +1,27 @@
+kind = "web"
+previewPath = "/"
+title = "Qarz-Haqdorlik Hisobi"
+version = "1.0.0"
+id = "artifacts/debt-ledger"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 24787
+
+[services.development]
+run = "pnpm --filter @workspace/debt-ledger run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/debt-ledger", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/debt-ledger/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "24787"
+BASE_PATH = "/"

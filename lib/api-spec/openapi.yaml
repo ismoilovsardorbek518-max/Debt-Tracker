@@ -10,6 +10,18 @@ servers:
 tags:
   - name: health
     description: Health operations
+  - name: clients
+    description: Client (debtor/creditor) records
+  - name: transactions
+    description: Income/expense transactions
+  - name: dashboard
+    description: Dashboard summary data
+  - name: akt-sverka
+    description: Reconciliation act
+  - name: export
+    description: Excel/PDF export
+  - name: users
+    description: User accounts and roles
 paths:
   /healthz:
     get:
@@ -24,6 +36,461 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /me:
+    get:
+      operationId: getCurrentUser
+      tags: [users]
+      summary: Get current authenticated user
+      responses:
+        "200":
+          description: Current user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+
+  /users:
+    get:
+      operationId: listUsers
+      tags: [users]
+      summary: List all users (admin only)
+      responses:
+        "200":
+          description: List of users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
+
+  /users/{id}/role:
+    patch:
+      operationId: updateUserRole
+      tags: [users]
+      summary: Update a user's role (admin only)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserRoleUpdate"
+      responses:
+        "200":
+          description: Updated user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+
+  /territories:
+    get:
+      operationId: listTerritories
+      tags: [clients]
+      summary: List distinct client territories
+      responses:
+        "200":
+          description: List of territories
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+
+  /clients:
+    get:
+      operationId: listClients
+      tags: [clients]
+      summary: List clients with balances
+      parameters:
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: territory
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of clients
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Client"
+    post:
+      operationId: createClient
+      tags: [clients]
+      summary: Create a client
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ClientInput"
+      responses:
+        "201":
+          description: Created client
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Client"
+
+  /clients/{id}:
+    get:
+      operationId: getClient
+      tags: [clients]
+      summary: Get a client by id
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Client
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Client"
+    patch:
+      operationId: updateClient
+      tags: [clients]
+      summary: Update a client
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ClientUpdate"
+      responses:
+        "200":
+          description: Updated client
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Client"
+    delete:
+      operationId: deleteClient
+      tags: [clients]
+      summary: Delete a client
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /clients/{id}/transactions:
+    get:
+      operationId: listClientTransactions
+      tags: [clients]
+      summary: List all transactions for a client (transaction history)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of transactions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Transaction"
+
+  /transactions:
+    get:
+      operationId: listTransactions
+      tags: [transactions]
+      summary: List transactions with filters
+      parameters:
+        - name: clientId
+          in: query
+          schema:
+            type: integer
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: paymentType
+          in: query
+          schema:
+            $ref: "#/components/schemas/PaymentType"
+        - name: responsiblePerson
+          in: query
+          schema:
+            type: string
+        - name: dateFrom
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: dateTo
+          in: query
+          schema:
+            type: string
+            format: date
+      responses:
+        "200":
+          description: List of transactions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Transaction"
+    post:
+      operationId: createTransaction
+      tags: [transactions]
+      summary: Create a transaction
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TransactionInput"
+      responses:
+        "201":
+          description: Created transaction
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Transaction"
+
+  /transactions/{id}:
+    patch:
+      operationId: updateTransaction
+      tags: [transactions]
+      summary: Update a transaction
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TransactionUpdate"
+      responses:
+        "200":
+          description: Updated transaction
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Transaction"
+    delete:
+      operationId: deleteTransaction
+      tags: [transactions]
+      summary: Delete a transaction
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /dashboard/summary:
+    get:
+      operationId: getDashboardSummary
+      tags: [dashboard]
+      summary: Get dashboard summary metrics and 30-day cash flow
+      responses:
+        "200":
+          description: Dashboard summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardSummary"
+
+  /akt-sverka:
+    get:
+      operationId: getAktSverka
+      tags: [akt-sverka]
+      summary: Get reconciliation act for a client over a date range
+      parameters:
+        - name: clientId
+          in: query
+          required: true
+          schema:
+            type: integer
+        - name: from
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+        - name: to
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+      responses:
+        "200":
+          description: Akt Sverka result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AktSverkaResult"
+
+  /export/clients:
+    get:
+      operationId: exportClients
+      tags: [export]
+      summary: Export client list as a formatted Excel file
+      parameters:
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: territory
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Excel file
+          content:
+            application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:
+              schema:
+                type: string
+                format: binary
+
+  /export/transactions:
+    get:
+      operationId: exportTransactions
+      tags: [export]
+      summary: Export transaction list as a formatted Excel file
+      parameters:
+        - name: clientId
+          in: query
+          schema:
+            type: integer
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: paymentType
+          in: query
+          schema:
+            $ref: "#/components/schemas/PaymentType"
+        - name: responsiblePerson
+          in: query
+          schema:
+            type: string
+        - name: dateFrom
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: dateTo
+          in: query
+          schema:
+            type: string
+            format: date
+      responses:
+        "200":
+          description: Excel file
+          content:
+            application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:
+              schema:
+                type: string
+                format: binary
+
+  /export/akt-sverka/excel:
+    get:
+      operationId: exportAktSverkaExcel
+      tags: [export]
+      summary: Export Akt Sverka as a formatted Excel file
+      parameters:
+        - name: clientId
+          in: query
+          required: true
+          schema:
+            type: integer
+        - name: from
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+        - name: to
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+      responses:
+        "200":
+          description: Excel file
+          content:
+            application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:
+              schema:
+                type: string
+                format: binary
+
+  /export/akt-sverka/pdf:
+    get:
+      operationId: exportAktSverkaPdf
+      tags: [export]
+      summary: Export Akt Sverka as a formatted PDF file
+      parameters:
+        - name: clientId
+          in: query
+          required: true
+          schema:
+            type: integer
+        - name: from
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+        - name: to
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+      responses:
+        "200":
+          description: PDF file
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +501,189 @@ components:
       required:
         - status
 
+    PaymentType:
+      type: string
+      enum: [cash, card, transfer]
+
+    TransactionType:
+      type: string
+      enum: [income, expense]
+
+    UserRole:
+      type: string
+      enum: [admin, operator]
+
+    User:
+      type: object
+      required: [id, clerkUserId, name, email, role, createdAt]
+      properties:
+        id: { type: integer }
+        clerkUserId: { type: string }
+        name: { type: string }
+        email: { type: string }
+        role:
+          $ref: "#/components/schemas/UserRole"
+        createdAt: { type: string, format: date-time }
+
+    UserRoleUpdate:
+      type: object
+      required: [role]
+      properties:
+        role:
+          $ref: "#/components/schemas/UserRole"
+
+    Client:
+      type: object
+      required: [id, name, territory, phone, responsiblePerson, balance, createdAt]
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        territory: { type: string }
+        phone: { type: ["string", "null"] }
+        responsiblePerson: { type: ["string", "null"] }
+        balance:
+          type: number
+          description: Positive = haqdorlik (they owe us), negative = qarzdorlik (we owe them)
+        createdAt: { type: string, format: date-time }
+
+    ClientInput:
+      type: object
+      required: [name, territory]
+      properties:
+        name: { type: string, minLength: 1 }
+        territory: { type: string, minLength: 1 }
+        phone: { type: string }
+        responsiblePerson: { type: string }
+
+    ClientUpdate:
+      type: object
+      properties:
+        name: { type: string, minLength: 1 }
+        territory: { type: string, minLength: 1 }
+        phone: { type: string }
+        responsiblePerson: { type: string }
+
+    Transaction:
+      type: object
+      required:
+        - id
+        - clientId
+        - clientName
+        - type
+        - amount
+        - date
+        - paymentType
+        - responsiblePerson
+        - comment
+        - createdAt
+      properties:
+        id: { type: integer }
+        clientId: { type: integer }
+        clientName: { type: string }
+        type:
+          $ref: "#/components/schemas/TransactionType"
+        amount:
+          type: number
+          minimum: 0
+        date: { type: string, format: date }
+        paymentType:
+          $ref: "#/components/schemas/PaymentType"
+        responsiblePerson: { type: string }
+        comment: { type: ["string", "null"] }
+        createdAt: { type: string, format: date-time }
+
+    TransactionInput:
+      type: object
+      required: [clientId, type, amount, date, paymentType, responsiblePerson]
+      properties:
+        clientId: { type: integer }
+        type:
+          $ref: "#/components/schemas/TransactionType"
+        amount:
+          type: number
+          exclusiveMinimum: 0
+        date: { type: string, format: date }
+        paymentType:
+          $ref: "#/components/schemas/PaymentType"
+        responsiblePerson: { type: string, minLength: 1 }
+        comment: { type: string }
+
+    TransactionUpdate:
+      type: object
+      properties:
+        clientId: { type: integer }
+        type:
+          $ref: "#/components/schemas/TransactionType"
+        amount:
+          type: number
+          exclusiveMinimum: 0
+        date: { type: string, format: date }
+        paymentType:
+          $ref: "#/components/schemas/PaymentType"
+        responsiblePerson: { type: string, minLength: 1 }
+        comment: { type: string }
+
+    CashFlowPoint:
+      type: object
+      required: [date, income, expense]
+      properties:
+        date: { type: string, format: date }
+        income: { type: number }
+        expense: { type: number }
+
+    DashboardSummary:
+      type: object
+      required: [totalReceivable, totalPayable, netBalance, cashFlow]
+      properties:
+        totalReceivable:
+          type: number
+          description: Jami haqdorlik
+        totalPayable:
+          type: number
+          description: Jami qarzdorlik
+        netBalance:
+          type: number
+        cashFlow:
+          type: array
+          items:
+            $ref: "#/components/schemas/CashFlowPoint"
+
+    AktSverkaRow:
+      type: object
+      required: [date, comment, responsiblePerson, paymentType, debit, credit, balance]
+      properties:
+        date: { type: string, format: date }
+        comment: { type: ["string", "null"] }
+        responsiblePerson: { type: string }
+        paymentType:
+          $ref: "#/components/schemas/PaymentType"
+        debit:
+          type: number
+          description: Kirim (mijoz to'ladi)
+        credit:
+          type: number
+          description: Chiqim (mijozga berildi)
+        balance:
+          type: number
+
+    AktSverkaResult:
+      type: object
+      required:
+        - clientId
+        - clientName
+        - periodStart
+        - periodEnd
+        - openingBalance
+        - closingBalance
+        - rows
+      properties:
+        clientId: { type: integer }
+        clientName: { type: string }
+        periodStart: { type: string, format: date }
+        periodEnd: { type: string, format: date }
+        openingBalance: { type: number }
+        closingBalance: { type: number }
+        rows:
+          type: array
+          items:
+            $ref: "#/components/schemas/AktSverkaRow"

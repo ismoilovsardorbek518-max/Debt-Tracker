@@ -1,0 +1,3 @@
+- [esbuild + fontkit/pdfkit bundling](esbuild-pdfkit-swc-helpers.md) — never externalize `@swc/*` in an api-server esbuild config that bundles pdfkit; fontkit needs `@swc/helpers` bundled in, not resolved at runtime.
+- [Orval date query params](orval-date-query-params.md) — generated Zod schemas coerce date-typed query/body fields to native `Date`, not strings; format before using with Drizzle date columns.
+- [Orval conditional-enabled query hooks](orval-enabled-needs-querykey.md) — passing `query: { enabled }` alone on a generated hook fails typecheck; must also pass `queryKey: get<Name>QueryKey(...)` explicitly.

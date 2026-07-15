@@ -1,0 +1,68 @@
+Veb-ilova turi: Klientlar bilan qarz va haqdorlik hisob-kitoblarini yuritish tizimi (Debtor-Creditor Ledger).
+Texnologiyalar: Frontend (React, Vue yoki HTML/CSS/JS), Backend (Node.js yoki Python Django/FastAPI), DB (PostgreSQL).
+
+Sizdan quyidagi aniq va tizimli talablar asosida ishlaydigan mukammal tizim yaratishingizni so'rayman:
+
+---
+
+### 1. Umumiy Dizayn va Dashboard (Boshqaruv paneli)
+- Tizim interfeysi chiroyli, zamonaviy va mobil qurilmalarga moslashgan bo'lishi kerak.
+- Dashboard qismida quyidagi asosiy ko'rsatkichlar (Metrikalar) katta va tushunarli kartalarda ko'rinib turishi kerak:
+  * Jami Haqdorlik (Bizdan qarzdorlik summasi - yashil rangda).
+  * Jami Qarzdorlik (Bizning mijozlar oldidagi qarzimiz - qizil rangda).
+  * Sof Balans (Haqdorlik va qarzdorlik farqi).
+- Grafiklar: Oxirgi 30 kundagi to'lovlar oqimi (kirim/chiqim) grafik ko'rinishida.
+
+---
+
+### 2. Klientlar bazasi (Mijozlar bo'limi)
+- **Klient qo'shish oynasi (Modal):** 
+  * Klient nomi (Majburiy maydon).
+  * Teritoriyasi / Hududi (Majburiy maydon - Toshkent, Samarqand va hkz).
+  * Telefon raqami (Ixtiyoriy).
+  * Mas'ul shaxs (Ixtiyoriy).
+- **Klientlar ro'yxati jadvali:**
+  * Jadvalda: ID, Nomi, Teritoriyasi, Telefon raqami, joriy balansi (musbat bo'lsa haqdorlik - yashil fonda, manfiy bo'lsa qarzdorlik - qizil fonda) ko'rinishi kerak.
+  * Har bir klient ustiga bosganda uning shaxsiy kartochkasi (barcha tranzaksiyalari tarixi va Akt Sverka) ochilishi kerak.
+- **Tepada umumiy balans (jami qarzdorlik va haqdorlik) doimiy ko'rinib turishi kerak.**
+- **Filtr va Qidiruv:** Klient nomi va teritoriyasi bo'yicha tezkor qidiruv paneli va filtri.
+- **Professional Excel Eksport:** 
+  * Tugma bosilganda klientlar ro'yxati va ularning balanslari chiroyli dizaynda yuklanishi kerak.
+  * Oddiy oq-qora jadval bo'lmasligi kerak: sarlavhalar brend ranglarida (masalan, to'q ko'k), ma'lumotlar oson o'qiladigan shriftda, ustun kengliklari avtomatik moslangan va qarzdorlik/haqdorlik ustunlari mos ravishda yashil/qizil rangda ajratilgan bo'lishi shart.
+
+---
+
+### 3. Operatsiyalar va Tranzaksiyalar bo'limi
+- **Yangi tranzaksiya (Kirim/Chiqim) qo'shish oynasi:**
+  * Klientni tanlash (Qidiruvga ega ro'yxat).
+  * Tranzaksiya turi: Kirim (Mijoz to'ladi) yoki Chiqim (Mijozga qarz berildi / tovar berildi).
+  * Summa (Majburiy).
+  * Sana (Majburiy, avtomatik bugungi sana tanlangan bo'ladi).
+  * To'lov turi: Naqd, Plastik karta, Bank o'tkazmasi (Perechisleniye) (Majburiy).
+  * Mas'ul shaxs ismi: Tranzaksiyani kiritayotgan yoki pulni qabul qilgan xodim (Majburiy).
+  * Izoh (Ixtiyoriy).
+- **Tranzaksiyalarni Tahrirlash (Redaktirovat) va O'chirish:**
+  * Kiritilgan har bir operatsiyani tahrirlash (edit) yoki noto'g'ri kiritilgan bo'lsa o'chirish imkoniyati bo'lishi kerak.
+  * Tahrirlash tugmasi bosilganda operatsiya oynasi barcha kiritilgan ma'lumotlar bilan ochiladi va o'zgarish kiritilib saqlangandan so'ng, klientning joriy balansi va barcha hisob-kitoblar avtomatik tarzda qayta hisoblanadi.
+- **Filtr va Qidiruv:** Sana oralig'i, to'lov turi, mijoz nomi va mas'ul shaxs bo'yicha filtrlash.
+- **Excel Eksport:** Barcha operatsiyalar ro'yxatini yuqori darajadagi dizaynda Excelga yuklash tugmasi.
+
+---
+
+### 4. Akt Sverka (O'zaro hisob-kitoblarni solishtirish dalolatnomasi)
+- Foydalanuvchi quyidagilarni tanlashi kerak:
+  1. Klient nomi (Dropdown).
+  2. Sana oralig'i (Boshlanish va tugash sanasi).
+- **Akt Sverka Natijasi:**
+  * Tanlangan muddat boshidagi boshlang'ich qoldiq (Saldoning boshlanishi).
+  * Muddat ichidagi barcha tranzaksiyalar xronologik tartibda (Sana, Izoh, Mas'ul shaxs, To'lov turi, Debet (Kirim), Kredit (Chiqim), joriy qoldiq).
+  * Tanlangan muddat oxiridagi yakuniy qoldiq (Saldoning tugashi).
+- **Professional Excel va PDF Eksport:** 
+  * Akt Sverkani chiroyli formatlangan, kompaniya logotipi/nomi yozilgan, barcha formulalari va jadvallari professional ko'rinishda bo'lgan Excel fayliga yuklab olish imkoniyati bo'lishi kerak. (Excelda ustun kengliklari, shrift o'lchamlari va ranglar vizual mukammal darajaga keltirilgan bo'lishi shart).
+
+---
+
+### 5. Qo'shimcha Texnik Talablar:
+- **Xavfsizlik va Rollar:** Tizimga kirish login/parol orqali bo'lishi kerak. Admin (barcha huquqlarga ega, tahrirlay oladi va o'chira oladi) va Operator (faqat ma'lumot kiritadi, lekin tahrirlash va o'chirish huquqlari cheklangan bo'ladi) rollari bo'lsin.
+- **Notification (Bildirishnomalar):** Operatsiya kiritilganda yoki tahrirlanganda ekranda chiroyli pop-up muvaffaqiyatli xabarlari chiqishi.
+- **Ma'lumotlar zaxirasi (Backup):** Ma'lumotlar bazasining har kunlik avtomatik zaxira nusxasini olish.
