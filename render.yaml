@@ -1,0 +1,12 @@
+services:
+  - type: worker
+    name: debt-tracker-telegram-bot
+    runtime: node
+    buildCommand: npm install -g pnpm && pnpm install && pnpm --filter @workspace/telegram-bot run build
+    startCommand: pnpm --filter @workspace/telegram-bot run start
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: TELEGRAM_BOT_TOKEN
+        sync: false
+    autoDeploy: true
