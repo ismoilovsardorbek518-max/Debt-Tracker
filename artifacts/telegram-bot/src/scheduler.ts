@@ -2,6 +2,7 @@ import cron from "node-cron";
 import type { Bot } from "grammy";
 import { getAllRegisteredUsers, getOverdueClients } from "./db.js";
 
+
 function formatAmount(n: number): string {
   return new Intl.NumberFormat("ru-RU").format(Math.round(n));
 }

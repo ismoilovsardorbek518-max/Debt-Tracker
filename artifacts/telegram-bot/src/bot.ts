@@ -5,8 +5,8 @@ import {
   getClientsWithDebt,
   getOverdueClients,
   getResponsiblePersonNames,
-  type ClientDebt,
 } from "./db.js";
+import type { ClientDebt } from "./db.js";
 
 type Step = "idle" | "ask_phone" | "ask_name";
 
