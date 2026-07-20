@@ -1,30 +1,15 @@
-import { Pool } from "pg";
-import { drizzle } from "drizzle-orm/node-postgres";
+import { pool, db, telegramUsersTable } from "@workspace/db";
 import { eq } from "drizzle-orm";
-import { telegramUsersTable } from "@workspace/db";
-
-if (!process.env.DATABASE_URL) {
-  throw new Error("DATABASE_URL muhit o'zgaruvchisi topilmadi.");
-}
-
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  max: 3,
-  idleTimeoutMillis: 60_000,
-  connectionTimeoutMillis: 10_000,
-});
-
-const db = drizzle(pool, { schema: { telegramUsersTable } });
 
 // Jadval yo'q bo'lsa avtomatik yaratadi
 export async function ensureTelegramUsersTable(): Promise<void> {
   await pool.query(`
     CREATE TABLE IF NOT EXISTS telegram_users (
-      id          SERIAL PRIMARY KEY,
-      chat_id     TEXT NOT NULL UNIQUE,
-      phone       TEXT NOT NULL,
+      id                SERIAL PRIMARY KEY,
+      chat_id           TEXT NOT NULL UNIQUE,
+      phone             TEXT NOT NULL,
       responsible_person TEXT NOT NULL,
-      created_at  TIMESTAMP NOT NULL DEFAULT NOW()
+      created_at        TIMESTAMP NOT NULL DEFAULT NOW()
     )
   `);
 }
